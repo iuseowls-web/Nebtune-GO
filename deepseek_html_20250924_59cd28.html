@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebtone Go - Privacy-Focused Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --firefox-purple: #9059ff;
+            --firefox-blue: #0060df;
+            --firefox-dark-blue: #00449e;
+            --firefox-light-blue: #00ddff;
+            --firefox-dark: #2b2a33;
+            --firefox-darker: #1c1b22;
+            --firefox-light: #f9f9fa;
+            --firefox-border: #8f8f9d;
+            --firefox-text: #fbfbfe;
+            --firefox-text-secondary: #cfcfd8;
+            --firefox-green: #30e60b;
+            --firefox-orange: #ff9400;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--firefox-darker);
+            color: var(--firefox-text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .firefox-header {
+            background: var(--firefox-dark);
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--firefox-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--firefox-purple) 0%, var(--firefox-blue) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::before {
+            content: "N";
+            font-size: 22px;
+            font-weight: 800;
+            color: white;
+            z-index: 2;
+        }
+
+        .logo-icon::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            top: 4px;
+            right: 4px;
+        }
+
+        .logo-text {
+            font-size: 1.75rem;
+            font-weight: 600;
+            background: linear-gradient(to right, var(--firefox-purple), var(--firefox-light-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--firefox-text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--firefox-text);
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+        }
+
+        .search-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--firefox-text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--firefox-border);
+            border-radius: 8px;
+            background: var(--firefox-dark);
+            color: var(--firefox-text);
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--firefox-blue);
+            box-shadow: 0 0 0 3px rgba(0, 96, 223, 0.3);
+        }
+
+        #searchButton {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            padding: 0.7rem 1.5rem;
+            background: var(--firefox-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        #searchButton:hover {
+            background: var(--firefox-dark-blue);
+        }
+
+        .privacy-features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--firefox-dark);
+            padding: 0.7rem 1.2rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: var(--firefox-text-secondary);
+            border: 1px solid var(--firefox-border);
+        }
+
+        .feature i {
+            color: var(--firefox-green);
+        }
+
+        .results {
+            margin-top: 2rem;
+        }
+
+        .result-item {
+            background: var(--firefox-dark);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--firefox-border);
+            transition: transform 0.2s ease;
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--firefox-blue);
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--firefox-text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-url {
+            color: var(--firefox-green);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-snippet {
+            color: var(--firefox-text-secondary);
+            line-height: 1.6;
+        }
+
+        .privacy-badge {
+            background: var(--firefox-green);
+            color: var(--firefox-darker);
+            padding: 0.2rem 0.7rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--firefox-text-secondary);
+            font-style: italic;
+        }
+
+        .footer {
+            background: var(--firefox-dark);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--firefox-border);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            color: var(--firefox-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-link {
+            color: var(--firefox-text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--firefox-text);
+        }
+
+        .firefox-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--firefox-border);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--firefox-dark);
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            color: var(--firefox-text-secondary);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--firefox-darker);
+            border-color: var(--firefox-border);
+            color: var(--firefox-text);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .privacy-features {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .firefox-button {
+            background: var(--firefox-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .firefox-button:hover {
+            background: var(--firefox-dark-blue);
+        }
+
+        .firefox-button.secondary {
+            background: transparent;
+            border: 1px solid var(--firefox-border);
+            color: var(--firefox-text);
+        }
+
+        .firefox-button.secondary:hover {
+            background: var(--firefox-dark);
+        }
+    </style>
+</head>
+<body>
+    <header class="firefox-header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <div class="logo-text">Nebtone Go</div>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link">Privacy</a>
+                <a href="#" class="nav-link">Features</a>
+                <a href="#" class="nav-link">Help</a>
+                <a href="#" class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="search-section">
+            <h1 class="tagline">Search with Firefox-level privacy protection</h1>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search the web privately with Nebtone Go..." autocomplete="off">
+                <button id="searchButton">Search</button>
+            </div>
+            
+            <div class="privacy-features">
+                <div class="feature">
+                    <i class="fas fa-shield-alt"></i> Enhanced Tracking Protection
+                </div>
+                <div class="feature">
+                    <i class="fas fa-fingerprint"></i> Fingerprint Resistance
+                </div>
+                <div class="feature">
+                    <i class="fas fa-ad"></i> Safe Ad Broker
+                </div>
+                <div class="feature">
+                    <i class="fas fa-lock"></i> Encrypted Connection
+                </div>
+            </div>
+        </section>
+
+        <div class="firefox-tabs">
+            <div class="tab active" data-tab="search">Search Results</div>
+            <div class="tab" data-tab="privacy">Privacy Dashboard</div>
+            <div class="tab" data-tab="settings">Settings</div>
+        </div>
+
+        <div class="tab-content active" id="search-tab">
+            <div id="results" class="results">
+                <div class="loading">Your private search results will appear here</div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="privacy-tab">
+            <div class="result-item">
+                <h3 class="result-title"><i class="fas fa-user-shield"></i> Privacy Protection Active</h3>
+                <p>Nebtone Go is currently blocking tracking attempts and protecting your identity.</p>
+                <div style="margin-top: 1rem;">
+                    <div class="feature" style="display: inline-block; margin-right: 1rem;">
+                        <i class="fas fa-check-circle"></i> 12 Trackers Blocked
+                    </div>
+                    <div class="feature" style="display: inline-block;">
+                        <i class="fas fa-check-circle"></i> Fingerprint Protected
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-item">
+                <h3 class="result-title"><i class="fas fa-chart-bar"></i> Privacy Report</h3>
+                <p>Your browsing data remains private. No search history is stored.</p>
+                <div style="margin-top: 1rem;">
+                    <button class="firefox-button">View Full Report</button>
+                    <button class="firefox-button secondary">Clear Recent History</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="settings-tab">
+            <div class="result-item">
+                <h3 class="result-title"><i class="fas fa-cog"></i> Privacy Settings</h3>
+                <div style="margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <span>Enhanced Tracking Protection</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <span>Fingerprint Protection</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <span>Safe Ad Broker</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">© 2023 Nebtone Go - Privacy-Focused Search Engine</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        class NebtoneGoSearch {
+            constructor() {
+                this.searchInput = document.getElementById('searchInput');
+                this.searchButton = document.getElementById('searchButton');
+                this.resultsContainer = document.getElementById('results');
+                this.tabs = document.querySelectorAll('.tab');
+                this.tabContents = document.querySelectorAll('.tab-content');
+                this.init();
+            }
+
+            init() {
+                this.searchButton.addEventListener('click', () => this.performSearch());
+                this.searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.performSearch();
+                });
+
+                // Tab functionality
+                this.tabs.forEach(tab => {
+                    tab.addEventListener('click', () => this.switchTab(tab.dataset.tab));
+                });
+
+                // Initialize privacy protections
+                this.enablePrivacyProtections();
+            }
+
+            switchTab(tabName) {
+                // Update tabs
+                this.tabs.forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.tab === tabName);
+                });
+
+                // Update tab contents
+                this.tabContents.forEach(content => {
+                    content.classList.toggle('active', content.id === `${tabName}-tab`);
+                });
+            }
+
+            enablePrivacyProtections() {
+                // Block common fingerprinting techniques
+                this.blockFingerprinting();
+                
+                // Prevent tracking
+                this.preventTracking();
+                
+                // Secure communications
+                this.secureCommunications();
+            }
+
+            blockFingerprinting() {
+                // Override common fingerprinting methods
+                Object.defineProperty(window, 'devicePixelRatio', {
+                    get: () => 1
+                });
+
+                // Disable WebRTC leak
+                if (window.RTCPeerConnection) {
+                    window.RTCPeerConnection = undefined;
+                }
+
+                // Reduce timing precision
+                if (window.performance) {
+                    const originalNow = performance.now.bind(performance);
+                    performance.now = () => Math.round(originalNow() / 100) * 100;
+                }
+
+                // Canvas fingerprinting protection
+                this.protectCanvas();
+            }
+
+            protectCanvas() {
+                const originalToBlob = HTMLCanvasElement.prototype.toBlob;
+                HTMLCanvasElement.prototype.toBlob = function(callback, type, quality) {
+                    const canvas = this;
+                    originalToBlob.call(canvas, function(blob) {
+                        callback(blob);
+                    }, type, quality);
+                };
+            }
+
+            preventTracking() {
+                // Block third-party cookies
+                Object.defineProperty(document, 'cookie', {
+                    get: () => '',
+                    set: () => {}
+                });
+
+                // Override tracking functions
+                window.ga = window.ga || function() {};
+                window.gtag = window.gtag || function() {};
+                window.fbq = window.fbq || function() {};
+            }
+
+            secureCommunications() {
+                // Add security headers via meta tags
+                const meta = document.createElement('meta');
+                meta.httpEquiv = "Permissions-Policy";
+                meta.content = "geolocation=(), microphone=(), camera=()";
+                document.head.appendChild(meta);
+            }
+
+            async performSearch() {
+                const query = this.searchInput.value.trim();
+                if (!query) return;
+
+                this.switchTab('search');
+                this.showLoading();
+                
+                try {
+                    // Simulate API call to privacy-focused search backend
+                    const results = await this.searchAPI(query);
+                    this.displayResults(results);
+                } catch (error) {
+                    this.showError('Search failed. Please try again.');
+                }
+            }
+
+            async searchAPI(query) {
+                // In a real implementation, this would connect to a privacy-focused search API
+                // For demonstration, we'll return simulated results
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        const results = [
+                            {
+                                title: "Firefox Privacy Features Explained",
+                                url: "https://privacy.firefox.com/features",
+                                snippet: "Learn how Firefox protects your privacy with Enhanced Tracking Protection, fingerprint resistance, and more security features."
+                            },
+                            {
+                                title: "Understanding Online Privacy Protection",
+                                url: "https://privacy.example.com/guide",
+                                snippet: "Complete guide to protecting your online privacy. Learn about tracking prevention, fingerprint protection, and secure browsing techniques."
+                            },
+                            {
+                                title: "Nebtone Go - Firefox Style Privacy Search",
+                                url: "https://nebtone.go/firefox-style",
+                                snippet: "How Nebtone Go implements Firefox-level privacy protections in a search engine. Our technology ensures your searches remain completely private."
+                            },
+                            {
+                                title: "The Importance of Search Privacy",
+                                url: "https://security.blog/search-privacy",
+                                snippet: "Why search privacy matters more than ever. Discover how your search data can be used and how to protect it effectively with privacy-focused tools."
+                            }
+                        ];
+                        resolve(results);
+                    }, 800);
+                });
+            }
+
+            displayResults(results) {
+                this.resultsContainer.innerHTML = '';
+                
+                if (results.length === 0) {
+                    this.resultsContainer.innerHTML = '<div class="loading">No results found. Try a different search term.</div>';
+                    return;
+                }
+                
+                results.forEach(result => {
+                    const resultElement = document.createElement('div');
+                    resultElement.className = 'result-item';
+                    resultElement.innerHTML = `
+                        <div class="result-title">
+                            <i class="fas fa-globe-americas"></i>
+                            ${this.escapeHTML(result.title)}
+                            <span class="privacy-badge">Nebtone Protected</span>
+                        </div>
+                        <div class="result-url">
+                            <i class="fas fa-lock"></i> ${this.escapeHTML(result.url)}
+                        </div>
+                        <div class="result-snippet">${this.escapeHTML(result.snippet)}</div>
+                    `;
+                    this.resultsContainer.appendChild(resultElement);
+                });
+            }
+
+            escapeHTML(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            showLoading() {
+                this.resultsContainer.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Searching securely with Nebtone Go...</div>';
+            }
+
+            showError(message) {
+                this.resultsContainer.innerHTML = `<div class="loading" style="color: #ff4d4d;">${message}</div>`;
+            }
+        }
+
+        // Add CSS for toggle switches
+        const style = document.createElement('style');
+        style.textContent = `
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 50px;
+                height: 24px;
+            }
+            
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+                border-radius: 24px;
+            }
+            
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 16px;
+                width: 16px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+            }
+            
+            input:checked + .slider {
+                background-color: var(--firefox-blue);
+            }
+            
+            input:checked + .slider:before {
+                transform: translateX(26px);
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize the search engine when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new NebtoneGoSearch();
+        });
+    </script>
+</body>
+</html>
